@@ -1,11 +1,13 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>Pets</h1>
-  <%= link_to "New Pet", new_pet_path, class: "btn btn-primary" %> <!-- -->
+  <%= link_to "New Pet", new_pet_path, class: "btn btn-primary" %>
 </div>
 
-<table class="table table-hover">
+<table class="table table-hover align-middle"> <%# align-middle para que el texto se centre con la imagen %>
   <thead class="table-dark">
     <tr>
+      <%# A.7: Columna para la miniatura %>
+      <th>Photo</th>
       <th>Name</th>
       <th>Species</th>
       <th>Breed</th>
@@ -17,18 +19,27 @@
   <tbody>
     <% @pets.each do |pet| %>
       <tr>
-        <td><%= pet.name %></td>
+        <td>
+          <% if pet.photo.attached? %>
+            <%= image_tag pet.photo.variant(resize_to_fill: [60, 60]), class: "rounded shadow-sm" %>
+          <% else %>
+            <div class="bg-light border rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="bi bi-camera text-muted" style="font-size: 1.2rem;"></i>
+            </div>
+          <% end %>
+        </td>
+        <td><strong><%= pet.name %></strong></td>
         <td><%= pet.species %></td>
         <td><%= pet.breed %></td>
         <td><%= pet.owner.first_name %> <%= pet.owner.last_name %></td>
         <td><%= pet.date_of_birth.strftime("%B %d, %Y") %></td>
         <td class="text-center">
           <div class="d-flex justify-content-center gap-1">
-            <%= link_to "Show", pet_path(pet), class: "btn btn-sm btn-outline-primary" %> <!-- -->
-            <%= link_to "Edit", edit_pet_path(pet), class: "btn btn-sm btn-info" %> <!-- -->
+            <%= link_to "Show", pet_path(pet), class: "btn btn-sm btn-outline-primary" %>
+            <%= link_to "Edit", edit_pet_path(pet), class: "btn btn-sm btn-info" %>
             <%= button_to "Delete", pet_path(pet), method: :delete, 
                 data: { turbo_confirm: "Are you sure?" }, 
-                class: "btn btn-sm btn-danger", form_class: "d-inline" %> <!-- -->
+                class: "btn btn-sm btn-danger", form_class: "d-inline" %>
           </div>
         </td>
       </tr>

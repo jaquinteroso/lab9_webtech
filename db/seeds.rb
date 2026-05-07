@@ -14,7 +14,7 @@ puts "Creating vets..."
     last_name: Faker::Name.last_name,
     email: Faker::Internet.unique.email,
     phone: Faker::PhoneNumber.cell_phone,
-      specialization: ["General Practice", "Surgery", "Dermatology", "Oncology"].sample
+    specialization: ["General Practice", "Surgery", "Dermatology", "Oncology"].sample
   )
 end
 
@@ -43,6 +43,27 @@ species_options = ["dog", "cat", "rabbit", "bird", "reptile", "other"]
   )
 end
 
+puts "Attaching photos to pets by species..."
+
+Pet.all.each do |pet|
+  # Determinamos el nombre del archivo basado en la especie de la mascota
+  file_name = "#{pet.species}.jpg"
+  image_path = Rails.root.join("db/seeds/pets", file_name)
+
+  if File.exist?(image_path)
+    # Usamos la firma de la API requerida por el lab: io, filename y content_type
+    pet.photo.attach(
+      io: File.open(image_path),
+      filename: file_name,
+      content_type: "image/jpeg"
+    )
+    puts "✅ Correct photo (#{file_name}) attached to #{pet.name} (#{pet.species})"
+  else
+    # Esto manejará casos como 'other' si no tienes un other.jpg
+    puts "⚠️  No photo found for species '#{pet.species}' (looking for #{file_name})"
+  end
+end
+
 puts "Creating appointments..."
 5.times do |i|
   Appointment.create!(
@@ -55,13 +76,12 @@ puts "Creating appointments..."
 end
 
 puts "Creating treatments..."
-# Buscamos citas que no estén canceladas (status != 3)
 valid_appointments = Appointment.where.not(status: :cancelled).limit(5)
 
 valid_appointments.each do |appointment|
   appointment.treatments.create!(
     name: ["Antibiotics", "Pain Relief", "Wound Cleaning", "Vitamin Boost"].sample,
-    medication: Faker::Science.element, # Nombre ficticio de medicina
+    medication: Faker::Science.element,
     dosage: "#{rand(1..10)}ml every #{rand(4..12)} hours",
     notes: Faker::Lorem.paragraph(sentence_count: 2),
     administered_at: appointment.date + 1.hour
