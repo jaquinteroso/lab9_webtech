@@ -17,8 +17,8 @@
     <%= f.datetime_field :administered_at, class: "form-control" %>
   </div>
   <div class="mb-3">
-    <%= f.label :notes, class: "form-label" %>
-    <%= f.text_area :notes, class: "form-control" %>
+    <%= f.label :clinical_notes, "Clinical Notes", class: "form-label" %>
+    <%= f.text_area :clinical_notes, class: "form-control" %>
   </div>
   <%= f.submit class: "btn btn-primary" %>
 <% end %>

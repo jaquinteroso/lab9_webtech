@@ -6,7 +6,7 @@ class AppointmentsController < ApplicationController
   end
 
   def show
-    @treatments = @appointment.treatments
+    @treatments = @appointment.treatments.with_rich_text_clinical_notes
   end
 
   def new
