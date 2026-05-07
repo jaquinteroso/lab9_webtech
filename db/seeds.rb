@@ -75,17 +75,41 @@ puts "Creating appointments..."
   )
 end
 
-puts "Creating treatments..."
+puts "Creating treatments with realistic notes..."
+
+observations = [
+  "Patient shows signs of mild dehydration and lethargy.",
+  "Heart rate is stable, no murmurs or arrhythmias detected.",
+  "Incision site is healing well with no signs of infection.",
+  "Slight sensitivity noted in the lower abdominal area.",
+  "Respiratory rate is within normal limits for the species.",
+  "Dental checkup reveals mild tartar buildup on molars."
+]
+
+recommendations = [
+  "Monitor water intake closely over the next 48 hours.",
+  "Strict rest: limit physical activity for one week.",
+  "Continue prescribed medication even if symptoms improve.",
+  "Switch to a hypoallergenic diet to rule out allergies.",
+  "Schedule a follow-up appointment in 14 days.",
+  "Keep the affected area clean and dry."
+]
+
 valid_appointments = Appointment.where.not(status: :cancelled).limit(5)
 
 valid_appointments.each do |appointment|
+  obs = observations.sample
+  rec = recommendations.sample
+
   appointment.treatments.create!(
     name: ["Antibiotics", "Pain Relief", "Wound Cleaning", "Vitamin Boost"].sample,
     medication: Faker::Science.element,
     dosage: "#{rand(1..10)}ml every #{rand(4..12)} hours",
-    notes: Faker::Lorem.paragraph(sentence_count: 2),
+    clinical_notes: "<h5>Clinical Observation</h5>" \
+    "<p>#{obs}</p>" \
+    "<h6>Plan & Recommendation:</h6>" \
+    "<ul><li>#{rec}</li></ul>",
     administered_at: appointment.date + 1.hour
   )
 end
-
 puts "Seed finished! Created: #{Owner.count} owners, #{Pet.count} pets, #{Vet.count} vets, #{Appointment.count} appointments, and #{Treatment.count} treatments."

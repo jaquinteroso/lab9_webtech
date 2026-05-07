@@ -1,24 +1,48 @@
-# README
+# VetClinic - Lab 7: Action Text & Active Storage
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This version of the VetClinic application is enriched with **Active Storage** for pet profile photos and **Action Text** for rich, formatted clinical notes in treatments.
 
-Things you may want to cover:
+## System Dependencies
 
-* Ruby version
+To process image variants (thumbnails), this application requires **libvips** installed on your system.
 
-* System dependencies
+### Installation instructions:
+* **Arch Linux**: `sudo pacman -S libvips`
+* **macOS (Homebrew)**: `brew install vips`
+* **Ubuntu/Debian**: `sudo apt install libvips`
 
-* Configuration
+## Setup and Running the App
 
-* Database creation
+Follow these steps to get the application running on a fresh database:
 
-* Database initialization
+1.  **Install dependencies**:
+    ```bash
+    bundle install
+    ```
+2.  **Setup the database**:
+    This command will drop, create, migrate, and seed the database with sample owners, pets (including photos), and treatments.
+    ```bash
+    bin/rails db:setup
+    ```
+3.  **Start the server**:
+    ```bash
+    bin/rails server
+    ```
+    *Alternatively, if using CSS/JS bundling:* `bin/dev`
 
-* How to run the test suite
+## Features Implemented
 
-* Services (job queues, cache servers, search engines, etc.)
+* **Active Storage**:
+    * Pets can have one optional photo.
+    * Validations for file type (JPEG, PNG, WebP) and size (max 5 MB).
+    * Automatic thumbnail generation (60px square) for the index page using variants.
+* **Action Text**:
+    * Treatments include `clinical_notes` with rich text support (headings, bold, lists).
+    * Optimized queries using eager loading to avoid N+1 issues.
 
-* Deployment instructions
+## Sanitization Check (B.4)
 
-* ...
+A security verification was performed on the Action Text editor. After attempting to inject a `<script>alert(1)</script>` tag into a treatment's clinical notes, the following was observed:
+* Action Text automatically sanitized the incoming HTML.
+* The script was **not** executed (no alert pop-up appeared).
+* The script tags were completely stripped from the rendered output, displaying only the inner text or being removed entirely, confirming protection against XSS attacks.
