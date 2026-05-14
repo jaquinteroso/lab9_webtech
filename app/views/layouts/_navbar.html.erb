@@ -21,6 +21,34 @@
           <%= link_to "Appointments", appointments_path, class: "nav-link" %>
         </li>
       </ul>
+
+      <ul class="navbar-nav ms-auto align-items-center">
+        <% if user_signed_in? %>
+          <li class="nav-item me-3">
+            <span class="navbar-text text-light">
+              Hello, <strong><%= current_user.first_name %> <%= current_user.last_name %></strong>
+            </span>
+          </li>
+          
+          <li class="nav-item me-2">
+            <%= link_to "Edit Profile", edit_user_registration_path, class: "nav-link" %>
+          </li>
+
+          <li class="nav-item">
+            <%= button_to "Sign Out", destroy_user_session_path, 
+                method: :delete, 
+                class: "btn btn-outline-light btn-sm",
+                data: { turbo_confirm: "Are you sure you want to sign out?" } %>
+          </li>
+        <% else %>
+          <li class="nav-item">
+            <%= link_to "Sign In", new_user_session_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %>
+          </li>
+        <% end %>
+      </ul>
     </div>
   </div>
 </nav>
