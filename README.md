@@ -35,17 +35,13 @@ Follow these steps to get the application running on a fresh database:
 1. **Install dependencies**:
 ```bash
 bundle install
-
 ```
-
 
 2. **Setup the database**:
 This command will drop, create, migrate, and seed the database with users, owners, pets, and treatments.
 ```bash
 bin/rails db:setup
-
 ```
-
 
 3. **Start the server**:
 ```bash
