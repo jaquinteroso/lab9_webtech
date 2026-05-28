@@ -1,5 +1,6 @@
 class Owner < ApplicationRecord
-  has_many :pets
+  belongs_to :user, optional: true
+  has_many :pets, dependent: :destroy
 
   before_validation :normalize_email
 

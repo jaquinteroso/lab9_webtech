@@ -1,5 +1,5 @@
 <div class="card shadow-sm p-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><%= @pet.name %></h2>
     
     <div class="d-flex gap-2">
@@ -16,30 +16,33 @@
       <%= link_to 'Back to Pets', pets_path, class: "btn btn-outline-secondary btn-sm" %>
     </div>
   </div>
-  <hr>
+  <hr class="mb-4">
 
-  <div class="row">
-    <div class="col-md-4 text-center">
+  <div class="row align-items-center mb-4">
+    
+    <div class="col-md-5 text-center mb-3 mb-md-0">
       <% if @pet.photo.attached? %>
-        <%= image_tag @pet.photo, class: "img-fluid rounded shadow-sm mb-3", style: "max-width: 300px;" %>
+        <%= image_tag @pet.photo, class: "img-fluid rounded shadow", style: "max-height: 300px; width: 100%; object-fit: cover;" %>
       <% else %>
-        <div class="bg-light border rounded d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 100%; max-width: 300px; height: 200px;">
+        <div class="bg-light border rounded d-flex align-items-center justify-content-center mx-auto" style="width: 100%; height: 250px;">
           <span class="text-muted">No photo available</span>
         </div>
       <% end %>
     </div>
 
-    <div class="col-md-8">
-      <p><strong>Species:</strong> <%= @pet.species %></p>
-      <p><strong>Breed:</strong> <%= @pet.breed %></p>
-      <p><strong>Weight:</strong> <%= @pet.weight %> kg</p>
-      <p><strong>Date of Birth:</strong> <%= @pet.date_of_birth.strftime("%B %d, %Y") %></p> 
-      <p><strong>Owner:</strong> <%= link_to "#{@pet.owner.first_name} #{@pet.owner.last_name}", owner_path(@pet.owner) %></p> 
+    <div class="col-md-7">
+      <div class="p-3 bg-light rounded border">
+        <p class="mb-2 fs-5"><strong>Species:</strong> <%= @pet.species.capitalize %></p>
+        <p class="mb-2 fs-5"><strong>Breed:</strong> <%= @pet.breed %></p>
+        <p class="mb-2 fs-5"><strong>Weight:</strong> <%= @pet.weight %> kg</p>
+        <p class="mb-2 fs-5"><strong>Date of Birth:</strong> <%= @pet.date_of_birth.strftime("%B %d, %Y") %></p> 
+        <p class="mb-0 fs-5"><strong>Owner:</strong> <%= link_to "#{@pet.owner.first_name} #{@pet.owner.last_name}", owner_path(@pet.owner), class: "text-decoration-none fw-bold" %></p> 
+      </div>
     </div>
   </div>
 
-  <h3 class="mt-4">Appointment History</h3>
-  <table class="table table-sm mt-2">
+  <h3 class="mt-5 border-bottom pb-2">Appointment History</h3>
+  <table class="table table-hover mt-3">
     <thead class="table-light">
       <tr>
         <th>Date</th>
@@ -49,27 +52,39 @@
       </tr>
     </thead>
     <tbody>
-      <% @pet.appointments.each do |app| %>
+      <% if @pet.appointments.any? %>
+        <% @pet.appointments.each do |app| %>
+          <tr>
+            <td><%= app.date.strftime("%B %d, %Y") %></td>
+            <td><%= app.reason %></td>
+            <td><span class="badge bg-secondary"><%= app.status.titleize %></span></td> 
+            <td>
+              <% if policy(app).show? %>
+                <%= link_to "Details", appointment_path(app), class: "btn btn-outline-primary btn-sm" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
         <tr>
-          <td><%= app.date.strftime("%B %d, %Y") %></td>
-          <td><%= app.reason %></td>
-          <td><%= app.status.titleize %></td> 
-          <td>
-            <% if policy(app).show? %>
-              <%= link_to "Details", appointment_path(app), class: "btn btn-link btn-sm p-0" %>
-            <% end %>
-          </td>
+          <td colspan="4" class="text-center text-muted py-3">No appointments scheduled yet.</td>
         </tr>
       <% end %>
     </tbody>
   </table>
 
-  <div class="mt-4">
-    <h4>Same species pets</h4>
-    <ul>
-      <% policy_scope(Pet).by_species(@pet.species).where.not(id: @pet.id).limit(5).each do |other_pet| %> 
-        <li><%= link_to other_pet.name, pet_path(other_pet) %></li>
+  <div class="mt-5">
+    <h4 class="border-bottom pb-2">Same species pets</h4>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <% similar_pets = policy_scope(Pet).by_species(@pet.species).where.not(id: @pet.id).limit(5) %>
+      
+      <% if similar_pets.any? %>
+        <% similar_pets.each do |other_pet| %> 
+          <%= link_to other_pet.name, pet_path(other_pet), class: "badge bg-info text-dark text-decoration-none p-2 fs-6" %>
+        <% end %>
+      <% else %>
+        <span class="text-muted">No other pets of this species found.</span>
       <% end %>
-    </ul>
+    </div>
   </div>
 </div>

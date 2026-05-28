@@ -11,7 +11,7 @@ Owner.destroy_all
 puts "Creating users with different roles..."
 
 # Admin User
-User.create!(
+admin_user = User.create!(
   first_name: "Admin",
   last_name: "User",
   email: "admin@vetclinic.com",
@@ -19,8 +19,8 @@ User.create!(
   role: :admin
 )
 
-# Vet User
-User.create!(
+# Vet User 
+vet_user = User.create!(
   first_name: "Vet",
   last_name: "User",
   email: "vet@vetclinic.com",
@@ -28,8 +28,8 @@ User.create!(
   role: :vet
 )
 
-# Owner User
-User.create!(
+# Owner User 
+owner_user = User.create!(
   first_name: "Owner",
   last_name: "User",
   email: "owner@vetclinic.com",
@@ -40,6 +40,16 @@ User.create!(
 puts "✅ Created 3 users (Admin, Vet, Owner). Password: 'password123'"
 
 puts "Creating vets..."
+main_vet = Vet.create!(
+  user: vet_user, 
+  first_name: "John",
+  last_name: "Doe",
+  email: "johndoe@vet.com",
+  phone: "555-0101",
+  specialization: "Surgery"
+)
+
+# 2. Veterinarios aleatorios
 2.times do
   Vet.create!(
     first_name: Faker::Name.first_name,
@@ -51,19 +61,41 @@ puts "Creating vets..."
 end
 
 puts "Creating owners and pets..."
-owners = []
-3.times do
-  owner = Owner.create!(
+main_owner = Owner.create!(
+  user: owner_user, # ¡Vinculación!
+  first_name: "Alice",
+  last_name: "Wonderland",
+  email: "alice@owner.com",
+  phone: "555-0303",
+  address: "123 Main St"
+)
+
+owners = [main_owner]
+
+# Dueños aleatorios 
+2.times do
+  owners << Owner.create!(
     first_name: Faker::Name.first_name,
     last_name: Faker::Name.last_name,
     email: Faker::Internet.unique.email,
     phone: Faker::PhoneNumber.cell_phone,
     address: Faker::Address.full_address
   )
-  owners << owner
 end
 
 species_options = ["dog", "cat", "rabbit", "bird", "reptile", "other"]
+
+# 3. Creación de una mascota para el dueño principal
+main_pet = Pet.create!(
+  owner: main_owner,
+  name: "Rex",
+  species: "dog",
+  breed: "Golden Retriever",
+  date_of_birth: 3.years.ago,
+  weight: 25.5
+)
+
+# Mascotas aleatorias
 5.times do
   Pet.create!(
     owner: owners.sample,
@@ -93,6 +125,16 @@ Pet.all.each do |pet|
 end
 
 puts "Creating appointments..."
+# Cita entre la mascota principal y el veterinario principal
+main_appointment = Appointment.create!(
+  pet: main_pet,
+  vet: main_vet,
+  date: Faker::Time.forward(days: 14),
+  reason: "Annual Checkup",
+  status: :scheduled
+)
+
+# Citas aleatorias
 5.times do
   Appointment.create!(
     pet: Pet.all.sample,
@@ -116,7 +158,18 @@ recommendations = [
   "Continue prescribed medication."
 ]
 
-valid_appointments = Appointment.where.not(status: :cancelled).limit(5)
+# Cita principal tenga su tratamiento
+Treatment.create!(
+  appointment: main_appointment,
+  name: "General Check",
+  medication: "None",
+  dosage: "N/A",
+  clinical_notes: "<h5>Clinical Observation</h5><p>#{observations.sample}</p><h6>Plan:</h6><ul><li>#{recommendations.sample}</li></ul>",
+  administered_at: main_appointment.date + 1.hour
+)
+
+# Tratamientos aleatorios para el resto
+valid_appointments = Appointment.where.not(id: main_appointment.id, status: :cancelled).limit(4)
 valid_appointments.each do |appointment|
   obs = observations.sample
   rec = recommendations.sample

@@ -1,5 +1,6 @@
 class Vet < ApplicationRecord
-  has_many :appointments
+  belongs_to :user, optional: true
+  has_many :appointments, dependent: :destroy
 
   validates :first_name, :last_name, :specialization, presence: true
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
