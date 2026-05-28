@@ -4,10 +4,16 @@ class TreatmentsController < ApplicationController
 
   def new
     @treatment = @appointment.treatments.build 
+    authorize @treatment # Verificamos permisos antes de mostrar el formulario
   end
 
   def create
-    @treatment = @appointment.treatments.build(treatment_params) 
+    @treatment = @appointment.treatments.build
+    
+    @treatment.assign_attributes(permitted_attributes(@treatment)) 
+    
+    authorize @treatment # Verificamos si el Vet realmente es el encargado de esta cita
+
     if @treatment.save
       redirect_to appointment_path(@appointment), notice: "Treatment added successfully." 
     else
@@ -16,10 +22,13 @@ class TreatmentsController < ApplicationController
   end
 
   def edit
+    authorize @treatment #
   end
 
   def update
-    if @treatment.update(treatment_params)
+    authorize @treatment #
+    
+    if @treatment.update(permitted_attributes(@treatment))
       redirect_to appointment_path(@appointment), notice: "Treatment updated successfully." 
     else
       render :edit, status: :unprocessable_entity 
@@ -27,6 +36,7 @@ class TreatmentsController < ApplicationController
   end
 
   def destroy
+    authorize @treatment #
     @treatment.destroy
     redirect_to appointment_path(@appointment), notice: "Treatment was successfully removed." 
   end
@@ -39,9 +49,5 @@ class TreatmentsController < ApplicationController
 
   def set_treatment
     @treatment = @appointment.treatments.find(params[:id]) 
-  end
-
-  def treatment_params
-    params.require(:treatment).permit(:name, :medication, :dosage, :clinical_notes, :administered_at) 
   end
 end
