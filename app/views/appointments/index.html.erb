@@ -1,7 +1,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>Appointments</h1>
-  <%# Botón para crear nueva cita %>
-  <%= link_to "New Appointment", new_appointment_path, class: "btn btn-primary" %>
+ 
+  <% if policy(Appointment).new? %>
+    <%= link_to "New Appointment", new_appointment_path, class: "btn btn-primary" %>
+  <% end %>
 </div>
 
 <table class="table table-striped table-hover shadow-sm">
@@ -33,18 +35,20 @@
         
         <td class="text-center">
           <div class="d-flex justify-content-center gap-1">
-            <%# Botón de Ver Detalles (Show) %>
             <%= link_to "View Details", appointment_path(appointment), class: "btn btn-sm btn-outline-primary" %>
             
-            <%# Botón de Editar %>
-            <%= link_to "Edit", edit_appointment_path(appointment), class: "btn btn-sm btn-info" %>
+            <% if policy(appointment).edit? %>
+              <%= link_to "Edit", edit_appointment_path(appointment), class: "btn btn-sm btn-info" %>
+            <% end %>
             
-            <%# Botón de Eliminar (Destructive action con confirmación) %>
-            <%= button_to "Delete", appointment_path(appointment), 
-                method: :delete, 
-                data: { turbo_confirm: "Are you sure you want to cancel this appointment?" }, 
-                class: "btn btn-sm btn-danger" %>
+            <% if policy(appointment).destroy? %>
+              <%= button_to "Delete", appointment_path(appointment), 
+                  method: :delete, 
+                  data: { turbo_confirm: "Are you sure you want to cancel this appointment?" }, 
+                  class: "btn btn-sm btn-danger", form_class: "d-inline" %>
+            <% end %>
           </div>
+
         </td>
       </tr>
     <% end %>

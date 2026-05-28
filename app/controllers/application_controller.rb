@@ -4,8 +4,8 @@ class ApplicationController < ActionController::Base
 
   include Pundit::Authorization
 
-  after_action :verify_authorized, except: :index, unless: :devise_controller?
-  after_action :verify_policy_scoped, only: :index, unless: :devise_controller?
+  after_action :verify_authorized, unless: -> { devise_controller? || action_name == "index" }
+  after_action :verify_policy_scoped, unless: -> { devise_controller? || action_name != "index" }
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 

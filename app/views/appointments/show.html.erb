@@ -1,14 +1,21 @@
 <div class="card shadow-sm p-4">
   <div class="d-flex justify-content-between align-items-center">
     <h2>Appointment Details</h2>
+
     <div class="d-flex gap-2">
-      <%= link_to "Edit Appointment", edit_appointment_path(@appointment), class: "btn btn-info" %>
-      <%= button_to "Cancel Appointment", appointment_path(@appointment), 
-          method: :delete, 
-          data: { turbo_confirm: "Are you sure you want to cancel this appointment?" }, 
-          class: "btn btn-danger",
-          form_class: "d-inline" %>
+      <% if policy(@appointment).edit? %>
+        <%= link_to "Edit Appointment", edit_appointment_path(@appointment), class: "btn btn-info" %>
+      <% end %>
+      
+      <% if policy(@appointment).destroy? %>
+        <%= button_to "Cancel Appointment", appointment_path(@appointment), 
+            method: :delete, 
+            data: { turbo_confirm: "Are you sure you want to cancel this appointment?" }, 
+            class: "btn btn-danger",
+            form_class: "d-inline" %>
+      <% end %>
     </div>
+
   </div>
   <hr>
   
@@ -25,8 +32,12 @@
   </div>
 
   <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+
     <h3>Treatments</h3>
-    <%= link_to "Add Treatment", new_appointment_treatment_path(@appointment), class: "btn btn-success" %>
+    <% if policy(Treatment.new(appointment: @appointment)).create? %>
+      <%= link_to "Add Treatment", new_appointment_treatment_path(@appointment), class: "btn btn-success" %>
+    <% end %>
+
   </div>
 
   <table class="table table-hover mt-2">
@@ -48,14 +59,21 @@
             <td><%= t.dosage %></td>
             <td><%= t.administered_at.strftime("%I:%M %p") %></td>
             <td class="text-center">
+
               <div class="d-flex justify-content-center gap-1">
-                <%= link_to "Edit", edit_appointment_treatment_path(@appointment, t), class: "btn btn-sm btn-info" %>
-                <%= button_to "Remove", appointment_treatment_path(@appointment, t), 
-                    method: :delete, 
-                    data: { turbo_confirm: "Remove this treatment record?" }, 
-                    class: "btn btn-sm btn-danger",
-                    form_class: "d-inline" %>
+                <% if policy(t).edit? %>
+                  <%= link_to "Edit", edit_appointment_treatment_path(@appointment, t), class: "btn btn-sm btn-info" %>
+                <% end %>
+                
+                <% if policy(t).destroy? %>
+                  <%= button_to "Remove", appointment_treatment_path(@appointment, t), 
+                      method: :delete, 
+                      data: { turbo_confirm: "Remove this treatment record?" }, 
+                      class: "btn btn-sm btn-danger",
+                      form_class: "d-inline" %>
+                <% end %>
               </div>
+
             </td>
           </tr>
           

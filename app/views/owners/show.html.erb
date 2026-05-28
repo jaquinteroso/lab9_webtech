@@ -1,7 +1,22 @@
 <div class="card shadow-sm p-4">
+
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2><%= "#{@owner.first_name} #{@owner.last_name}" %></h2>
-    <%= link_to 'Back to Owners', owners_path, class: "btn btn-outline-secondary btn-sm" %>
+    
+    <div class="d-flex gap-2">
+      <% if policy(@owner).edit? %>
+        <%= link_to 'Edit Profile', edit_owner_path(@owner), class: "btn btn-info btn-sm" %>
+      <% end %>
+
+      <% if policy(@owner).destroy? %>
+        <%= button_to 'Delete', @owner, method: :delete, 
+            data: { turbo_confirm: "Are you sure?" }, 
+            class: "btn btn-danger btn-sm", form_class: "d-inline" %>
+      <% end %>
+
+      <%= link_to 'Back to Owners', owners_path, class: "btn btn-outline-secondary btn-sm" %>
+    </div>
+
   </div>
   <hr>
   <p><strong>Email:</strong> <%= @owner.email %></p>

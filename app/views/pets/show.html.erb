@@ -1,7 +1,20 @@
 <div class="card shadow-sm p-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2><%= @pet.name %></h2>
-    <%= link_to 'Back to Pets', pets_path, class: "btn btn-outline-secondary btn-sm" %>
+    
+    <div class="d-flex gap-2">
+      <% if policy(@pet).edit? %>
+        <%= link_to 'Edit Pet', edit_pet_path(@pet), class: "btn btn-info btn-sm" %>
+      <% end %>
+
+      <% if policy(@pet).destroy? %>
+        <%= button_to 'Delete', @pet, method: :delete, 
+            data: { turbo_confirm: "Are you sure you want to delete this pet?" }, 
+            class: "btn btn-danger btn-sm", form_class: "d-inline" %>
+      <% end %>
+
+      <%= link_to 'Back to Pets', pets_path, class: "btn btn-outline-secondary btn-sm" %>
+    </div>
   </div>
   <hr>
 
@@ -16,34 +29,47 @@
       <% end %>
     </div>
 
-    <p><strong>Species:</strong> <%= @pet.species %></p>
-    <p><strong>Breed:</strong> <%= @pet.breed %></p>
-    <p><strong>Weight:</strong> <%= @pet.weight %> kg</p>
-    <p><strong>Date of Birth:</strong> <%= @pet.date_of_birth.strftime("%B %d, %Y") %></p> <p><strong>Owner:</strong> <%= link_to "#{@pet.owner.first_name} #{@pet.owner.last_name}", owner_path(@pet.owner) %></p> <h3 class="mt-4">Appointment History</h3>
-    <table class="table table-sm mt-2">
-      <thead class="table-light">
-        <tr>
-          <th>Date</th>
-          <th>Reason</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @pet.appointments.each do |app| %>
-          <tr>
-            <td><%= app.date.strftime("%B %d, %Y") %></td>
-            <td><%= app.reason %></td>
-            <td><%= app.status.titleize %></td> <td><%= link_to "Details", appointment_path(app), class: "btn btn-link btn-sm p-0" %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-
-    <div class="mt-4">
-      <h4>Same species pets</h4>
-      <ul>
-        <% Pet.by_species(@pet.species).where.not(id: @pet.id).limit(5).each do |other_pet| %> <li><%= link_to other_pet.name, pet_path(other_pet) %></li>
-        <% end %>
-      </ul>
+    <div class="col-md-8">
+      <p><strong>Species:</strong> <%= @pet.species %></p>
+      <p><strong>Breed:</strong> <%= @pet.breed %></p>
+      <p><strong>Weight:</strong> <%= @pet.weight %> kg</p>
+      <p><strong>Date of Birth:</strong> <%= @pet.date_of_birth.strftime("%B %d, %Y") %></p> 
+      <p><strong>Owner:</strong> <%= link_to "#{@pet.owner.first_name} #{@pet.owner.last_name}", owner_path(@pet.owner) %></p> 
     </div>
+  </div>
+
+  <h3 class="mt-4">Appointment History</h3>
+  <table class="table table-sm mt-2">
+    <thead class="table-light">
+      <tr>
+        <th>Date</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @pet.appointments.each do |app| %>
+        <tr>
+          <td><%= app.date.strftime("%B %d, %Y") %></td>
+          <td><%= app.reason %></td>
+          <td><%= app.status.titleize %></td> 
+          <td>
+            <% if policy(app).show? %>
+              <%= link_to "Details", appointment_path(app), class: "btn btn-link btn-sm p-0" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="mt-4">
+    <h4>Same species pets</h4>
+    <ul>
+      <% policy_scope(Pet).by_species(@pet.species).where.not(id: @pet.id).limit(5).each do |other_pet| %> 
+        <li><%= link_to other_pet.name, pet_path(other_pet) %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>

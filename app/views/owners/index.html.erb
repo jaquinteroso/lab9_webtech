@@ -1,7 +1,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>Owners</h1>
-  <%# Botón superior para crear nuevo Owner %>
-  <%= link_to "New Owner", new_owner_path, class: "btn btn-primary" %>
+  
+  <% if policy(Owner).new? %>
+    <%= link_to "New Owner", new_owner_path, class: "btn btn-primary" %>
+  <% end %>
 </div>
 
 <table class="table table-hover">
@@ -22,20 +24,23 @@
         <td><%= owner.phone %></td>
         <td><%= owner.pets.count %></td>
         <td class="text-center">
-          <%# Contenedor flex para alinear los botones perfectamente %>
+
           <div class="d-flex justify-content-center gap-1">
             <%= link_to "Show", owner_path(owner), class: "btn btn-sm btn-outline-primary" %>
             
-            <%# Botón de editar en color cian (info) %>
-            <%= link_to "Edit", edit_owner_path(owner), class: "btn btn-sm btn-info" %>
+            <% if policy(owner).edit? %>
+              <%= link_to "Edit", edit_owner_path(owner), class: "btn btn-sm btn-info" %>
+            <% end %>
             
-            <%# Botón de borrar con confirmación y clase inline %>
-            <%= button_to "Delete", owner_path(owner), 
-                method: :delete, 
-                data: { turbo_confirm: "Are you sure you want to delete this owner?" }, 
-                class: "btn btn-sm btn-danger",
-                form_class: "d-inline" %>
+            <% if policy(owner).destroy? %>
+              <%= button_to "Delete", owner_path(owner), 
+                  method: :delete, 
+                  data: { turbo_confirm: "Are you sure you want to delete this owner?" }, 
+                  class: "btn btn-sm btn-danger",
+                  form_class: "d-inline" %>
+            <% end %>
           </div>
+
         </td>
       </tr>
     <% end %>

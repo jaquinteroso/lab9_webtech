@@ -7,20 +7,30 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <%= link_to "Owners", owners_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Pets", pets_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Vets", vets_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Appointments", appointments_path, class: "nav-link" %>
-        </li>
-      </ul>
+      <% if user_signed_in? %>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          
+          <% if current_user.admin? || current_user.vet? %>
+            <li class="nav-item">
+              <%= link_to "Owners", owners_path, class: "nav-link" %>
+            </li>
+          <% elsif current_user.owner? && current_user.owner.present? %>
+            <li class="nav-item">
+              <%= link_to "My account", owner_path(current_user.owner), class: "nav-link" %>
+            </li>
+          <% end %>
+
+          <li class="nav-item">
+            <%= link_to "Pets", pets_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Vets", vets_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Appointments", appointments_path, class: "nav-link" %>
+          </li>
+        </ul>
+      <% end %>
 
       <ul class="navbar-nav ms-auto align-items-center">
         <% if user_signed_in? %>
@@ -28,10 +38,6 @@
             <span class="navbar-text text-light">
               Hello, <strong><%= current_user.first_name %> <%= current_user.last_name %></strong>
             </span>
-          </li>
-          
-          <li class="nav-item me-2">
-            <%= link_to "Edit Profile", edit_user_registration_path, class: "nav-link" %>
           </li>
 
           <li class="nav-item">
@@ -43,9 +49,6 @@
         <% else %>
           <li class="nav-item">
             <%= link_to "Sign In", new_user_session_path, class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %>
           </li>
         <% end %>
       </ul>
