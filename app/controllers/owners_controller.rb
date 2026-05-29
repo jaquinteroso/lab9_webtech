@@ -1,29 +1,22 @@
 class OwnersController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:index]
-  skip_after_action :verify_policy_scoped, only: [:index], unless: :user_signed_in?
-
   before_action :set_owner, only: [:show, :edit, :update, :destroy]
 
   def index
-    if user_signed_in?
-      @owners = policy_scope(Owner).includes(:pets) 
-    else
-      @owners = Owner.includes(:pets).all
-    end
+    @owners = policy_scope(Owner).includes(:pets) 
   end
 
   def show
-    authorize @owner #
+    authorize @owner 
   end
 
   def new
     @owner = Owner.new
-    authorize @owner #
+    authorize @owner 
   end
 
   def create
     @owner = Owner.new
-    authorize @owner #
+    authorize @owner 
     
     @owner.assign_attributes(permitted_attributes(@owner)) 
 
@@ -35,13 +28,13 @@ class OwnersController < ApplicationController
   end
 
   def edit
-    authorize @owner #
+    authorize @owner 
   end
 
   def update
-    authorize @owner #
+    authorize @owner 
     
-    if @owner.update(permitted_attributes(@owner)) #
+    if @owner.update(permitted_attributes(@owner)) 
       redirect_to @owner, notice: "Owner was successfully updated."
     else
       render :edit, status: :unprocessable_entity
@@ -49,7 +42,7 @@ class OwnersController < ApplicationController
   end
 
   def destroy
-    authorize @owner #
+    authorize @owner 
     @owner.destroy
     redirect_to owners_url, notice: "Owner was successfully destroyed."
   end
